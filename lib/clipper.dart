@@ -3,19 +3,23 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class ConcentricClipper extends CustomClipper<Path> {
+  final BuildContext context;
   final double radius;
   final double limit = 0.5;
   final double verticalPosition;
   final double progress;
   final double growFactor;
   final bool reverse;
+  final bool isLast;
 
   ConcentricClipper({
+    @required this.context,
     this.progress = 0.0,
     this.verticalPosition = 0.85,
     this.radius = 30.0,
     this.growFactor = 30.0,
     this.reverse = false,
+    this.isLast = false,
   });
 
   @override
@@ -29,7 +33,6 @@ class ConcentricClipper extends CustomClipper<Path> {
       shape = _createShrinkingShape(path, size);
     }
     path.addArc(shape, 0, 90);
-    // path.addRect(rect);
     return path;
   }
 
@@ -57,8 +60,10 @@ class ConcentricClipper extends CustomClipper<Path> {
     double _limit = limit * growFactor;
     double r = radius + pow(2, _limit - _progress);
     double delta = _progress / _limit * radius;
+    double verticalDelta =
+        isLast ? MediaQuery.of(context).size.height * 0.3 : 0;
     double x = size.width / 2 - r + delta;
-    double y = (size.height * verticalPosition) + radius;
+    double y = (size.height * verticalPosition) + radius + verticalDelta;
 
     path.lineTo(size.width, 0);
     path.lineTo(size.width, size.height);

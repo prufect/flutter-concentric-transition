@@ -8,8 +8,6 @@ import 'clipper.dart';
 class ConcentricPageView extends StatefulWidget {
   /// The [value] will help to provide some animations
   final Function(int index, double value) itemBuilder;
-  final Function(int page) onChange;
-  final Function onFinish;
   final int itemCount;
   final PageController pageController;
   final bool pageSnapping;
@@ -29,8 +27,6 @@ class ConcentricPageView extends StatefulWidget {
     Key key,
     @required this.itemBuilder,
     @required this.colors,
-    this.onChange,
-    this.onFinish,
     this.itemCount,
     this.pageController,
     this.pageSnapping = true,
@@ -60,6 +56,7 @@ class _ConcentricPageViewState extends State<ConcentricPageView> {
   int _prevPage = 0;
   Color _prevColor;
   Color _nextColor;
+  int _currentPage = 0;
 
   @override
   void initState() {
@@ -68,7 +65,7 @@ class _ConcentricPageViewState extends State<ConcentricPageView> {
     _pageController = widget.pageController != null
         ? widget.pageController
         : PageController(
-            initialPage: 0,
+            initialPage: _currentPage,
           );
 
     _pageController.addListener(_onScroll);
@@ -96,10 +93,12 @@ class _ConcentricPageViewState extends State<ConcentricPageView> {
               color: _prevColor, // Colors.white,
               child: ClipPath(
                 clipper: ConcentricClipper(
+                  context: context,
                   progress: _progress,
                   reverse: widget.reverse,
                   radius: widget.radius,
                   verticalPosition: widget.verticalPosition,
+                  isLast: _currentPage == widget.itemCount - 1,
                 ),
                 child: Container(
                   color: _nextColor,
@@ -154,10 +153,13 @@ class _ConcentricPageViewState extends State<ConcentricPageView> {
             );
           },
         ),
-        Positioned(
-          top: MediaQuery.of(context).size.height * widget.verticalPosition,
-          child: _buildButton(),
-        ),
+        _currentPage != widget.itemCount - 1
+            ? Positioned(
+                top: MediaQuery.of(context).size.height *
+                    widget.verticalPosition,
+                child: _buildButton(),
+              )
+            : SizedBox.shrink(),
       ],
     );
   }
@@ -165,16 +167,10 @@ class _ConcentricPageViewState extends State<ConcentricPageView> {
   Widget _buildButton() {
     return RawMaterialButton(
       onPressed: () {
-        if (_pageController.page == widget.colors.length - 1) {
-          if (widget.onFinish != null) {
-            widget.onFinish();
-          }
-        } else {
-          _pageController.nextPage(
-            duration: widget.duration,
-            curve: widget.curve,
-          );
-        }
+        _pageController.nextPage(
+          duration: widget.duration,
+          curve: widget.curve,
+        );
       },
       constraints: BoxConstraints(
         minWidth: widget.radius * 2,
@@ -185,9 +181,7 @@ class _ConcentricPageViewState extends State<ConcentricPageView> {
   }
 
   void _onPageChanged(int page) {
-    if (widget.onChange != null) {
-      widget.onChange(page);
-    }
+    setState(() => _currentPage = page);
   }
 
   void _onScroll() {
