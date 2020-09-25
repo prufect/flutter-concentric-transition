@@ -16,7 +16,12 @@ class PageData {
   });
 }
 
-class OnboardingExample extends StatelessWidget {
+class OnboardingExample extends StatefulWidget {
+  @override
+  _OnboardingExampleState createState() => _OnboardingExampleState();
+}
+
+class _OnboardingExampleState extends State<OnboardingExample> {
   final List<PageData> pages = [
     PageData(
       icon: Icons.format_size,
@@ -41,47 +46,45 @@ class OnboardingExample extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: ConcentricPageView(
-          colors: colors,
-          opacityFactor: 1.0,
-          scaleFactor: 0.0,
-          radius: 500,
-          curve: Curves.ease,
-          duration: Duration(seconds: 2),
-          verticalPosition: 0.7,
-          direction: Axis.vertical,
+    return Scaffold(
+      body: ConcentricPageView(
+        colors: colors,
+        opacityFactor: 1.0,
+        scaleFactor: 0.0,
+        radius: 50,
+        itemCount: 3,
+        curve: Curves.ease,
+        duration: Duration(seconds: 2),
+        verticalPosition: 0.8,
+        direction: Axis.horizontal,
 //          itemCount: pages.length,
 //          physics: NeverScrollableScrollPhysics(),
-          itemBuilder: (index, value) {
-            PageData page = pages[index % pages.length];
-            // For example scale or transform some widget by [value] param
-            //            double scale = (1 - (value.abs() * 0.4)).clamp(0.0, 1.0);
-            return Container(
-              child: Theme(
-                data: ThemeData(
-                  textTheme: TextTheme(
-                    title: TextStyle(
-                      color: page.textColor,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Helvetica',
-                      letterSpacing: 0.0,
-                      fontSize: 36,
-                    ),
-                    subtitle: TextStyle(
-                      color: page.textColor,
-                      fontWeight: FontWeight.w300,
-                      fontSize: 18,
-                    ),
+        itemBuilder: (index, value) {
+          PageData page = pages[index % pages.length];
+          // For example scale or transform some widget by [value] param
+          //            double scale = (1 - (value.abs() * 0.4)).clamp(0.0, 1.0);
+          return Container(
+            child: Theme(
+              data: ThemeData(
+                textTheme: TextTheme(
+                  title: TextStyle(
+                    color: page.textColor,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Helvetica',
+                    letterSpacing: 0.0,
+                    fontSize: 36,
+                  ),
+                  subtitle: TextStyle(
+                    color: page.textColor,
+                    fontWeight: FontWeight.w300,
+                    fontSize: 18,
                   ),
                 ),
-                child: PageCard(page: page),
               ),
-            );
-          },
-        ),
+              child: PageCard(page: page),
+            ),
+          );
+        },
       ),
     );
   }

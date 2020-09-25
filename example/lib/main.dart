@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'onboarding_example.dart';
 
 void main() {
-  runApp(OnboardingExample());
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: OnboardingExample(),
+  ));
 //  runApp(RouteExample());
 }
